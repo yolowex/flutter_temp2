@@ -18,17 +18,16 @@ class JokeApp extends StatelessWidget {
 
 class AppData extends ChangeNotifier {
   List<JokeData> _jokeDataList = [];
+  int navBarIndex = 0;
 
-  List<JokeData> get jokeDataList{
+  List<JokeData> get jokeDataList {
     return List.unmodifiable(_jokeDataList);
   }
 
-  void addJoke(JokeData jokeData){
+  void addJoke(JokeData jokeData) {
     _jokeDataList.add(jokeData);
     notifyListeners();
   }
-
-
 }
 
 class AppEntry extends StatefulWidget {
@@ -36,8 +35,8 @@ class AppEntry extends StatefulWidget {
   State<AppEntry> createState() => _AppEntryState();
 }
 
-class Page {
-  static Widget buildAllPosts(BuildContext context) {
+class Page extends StatelessWidget {
+  Widget buildAllPosts(BuildContext context) {
     var appState = context.watch<AppData>();
 
     return ListView(
@@ -45,28 +44,29 @@ class Page {
     );
   }
 
-  static Widget currentPage(BuildContext context,{required int navBarIndex}) {
-    if (navBarIndex == 0) return buildAllPosts(context);
-    if (navBarIndex == 1) return JokeAddPage();
-    if (navBarIndex == 2) return JokeProfileApp();
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppData>();
+    if (appState.navBarIndex == 0) return buildAllPosts(context);
+    if (appState.navBarIndex == 1) return JokeAddPage();
+    if (appState.navBarIndex == 2) return JokeProfileApp();
     return ErrorWidget(Exception("Invalid navigation destination!"));
   }
 }
 
 class _AppEntryState extends State<AppEntry> {
-  int navBarIndex = 0;
-
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppData>();
+
     return Scaffold(
       body: Column(
         children: [
           Expanded(
-            child: Page.currentPage(context,navBarIndex: navBarIndex),
+            child: Page(),
           ),
           JokeNavBar(
             onDestinationSelected: (index) =>
-                setState(() => navBarIndex = index),
+                setState(() => appState.navBarIndex = index),
           )
         ],
       ),

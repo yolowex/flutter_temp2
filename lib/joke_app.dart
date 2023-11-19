@@ -17,8 +17,20 @@ class JokeApp extends StatelessWidget {
 }
 
 class AppData extends ChangeNotifier {
+  PageController pageController = PageController();
+
   List<JokeData> _jokeDataList = [];
-  int navBarIndex = 0;
+  int _navBarIndex = 0;
+
+  int get navBarIndex{
+    return _navBarIndex;
+  }
+
+  set navBarIndex(newValue){
+    _navBarIndex = newValue;
+    notifyListeners();
+  }
+
 
   List<JokeData> get jokeDataList {
     return List.unmodifiable(_jokeDataList);
@@ -31,11 +43,17 @@ class AppData extends ChangeNotifier {
 }
 
 class AppEntry extends StatefulWidget {
+
   @override
   State<AppEntry> createState() => _AppEntryState();
 }
 
-class Page extends StatelessWidget {
+class Page extends StatefulWidget {
+  @override
+  State<Page> createState() => _PageState();
+}
+
+class _PageState extends State<Page> {
   Widget buildAllPosts(BuildContext context) {
     var appState = context.watch<AppData>();
 
@@ -46,10 +64,19 @@ class Page extends StatelessWidget {
 
   Widget build(BuildContext context) {
     var appState = context.watch<AppData>();
-    if (appState.navBarIndex == 0) return buildAllPosts(context);
-    if (appState.navBarIndex == 1) return JokeAddPage();
-    if (appState.navBarIndex == 2) return JokeProfileApp();
-    return ErrorWidget(Exception("Invalid navigation destination!"));
+
+    return PageView(
+
+      controller: appState.pageController,
+      onPageChanged: (index) {
+        appState.navBarIndex = index;
+      },
+      children: [
+        buildAllPosts(context),
+        JokeAddPage(),
+        JokeProfileApp(),
+      ],
+    );
   }
 }
 
@@ -57,7 +84,7 @@ class _AppEntryState extends State<AppEntry> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppData>();
-
+    print("Ta da! I'm rebuilt! ${appState.navBarIndex}");
     return Scaffold(
       body: Column(
         children: [
@@ -65,9 +92,11 @@ class _AppEntryState extends State<AppEntry> {
             child: Page(),
           ),
           JokeNavBar(
-            onDestinationSelected: (index) =>
-                setState(() => appState.navBarIndex = index),
-          )
+            onDestinationSelected: (index) {
+              appState.navBarIndex = index;
+              appState.pageController.jumpToPage(index);
+              },
+          ),
         ],
       ),
     );

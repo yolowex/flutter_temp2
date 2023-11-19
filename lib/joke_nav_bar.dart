@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:layout_concepts/joke_app.dart';
+import 'package:provider/provider.dart';
 
 class JokeNavBar extends StatefulWidget {
   final Function onDestinationSelected;
-
   JokeNavBar({required this.onDestinationSelected});
 
   @override
@@ -10,14 +11,16 @@ class JokeNavBar extends StatefulWidget {
 }
 
 class _JokeNavBarState extends State<JokeNavBar> {
-  int navBarIndex = 0;
+
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppData>();
+
     return NavigationBar(
-        selectedIndex: navBarIndex,
+        selectedIndex: appState.navBarIndex,
         onDestinationSelected: (newIndex) {
-          setState(() => this.navBarIndex = newIndex);
+          setState(() => appState..navBarIndex = newIndex);
           widget.onDestinationSelected(newIndex);
         },
         destinations: [

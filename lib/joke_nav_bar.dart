@@ -23,7 +23,7 @@ class _JokeNavBarState extends State<JokeNavBar> {
           setState(() => appState..navBarIndex = newIndex);
           widget.onDestinationSelected(newIndex);
         },
-        destinations: [
+        destinations: const <Widget>[
           NavigationDestination(
               icon: Icon(Icons.people, size: 35), label: "all posts"),
           NavigationDestination(

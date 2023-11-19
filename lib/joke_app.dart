@@ -4,7 +4,6 @@ import 'package:layout_concepts/joke_nav_bar.dart';
 import 'package:layout_concepts/joke_profile_app.dart';
 import 'package:layout_concepts/joke_view.dart';
 import 'package:provider/provider.dart';
-import 'package:lorem_ipsum/lorem_ipsum.dart';
 
 class JokeApp extends StatelessWidget {
   @override
@@ -19,18 +18,17 @@ class JokeApp extends StatelessWidget {
 class AppData extends ChangeNotifier {
   PageController pageController = PageController();
 
-  List<JokeData> _jokeDataList = [];
+  final List<JokeData> _jokeDataList = [];
   int _navBarIndex = 0;
 
-  int get navBarIndex{
+  int get navBarIndex {
     return _navBarIndex;
   }
 
-  set navBarIndex(newValue){
+  set navBarIndex(newValue) {
     _navBarIndex = newValue;
     notifyListeners();
   }
-
 
   List<JokeData> get jokeDataList {
     return List.unmodifiable(_jokeDataList);
@@ -43,7 +41,6 @@ class AppData extends ChangeNotifier {
 }
 
 class AppEntry extends StatefulWidget {
-
   @override
   State<AppEntry> createState() => _AppEntryState();
 }
@@ -56,17 +53,39 @@ class Page extends StatefulWidget {
 class _PageState extends State<Page> {
   Widget buildAllPosts(BuildContext context) {
     var appState = context.watch<AppData>();
+    List<Widget> children =
+        appState.jokeDataList.map((e) => JokeView(e)).toList();
 
+    if (children.isEmpty) {
+      children = const <Widget>[
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Card(
+                  semanticContainer: true,
+                  child: Text(
+                    "Could not find any post!\n sorry! :(",
+                    style: TextStyle(fontSize: 25, fontFamily: 'monospace'),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      ];
+    }
     return ListView(
-      children: appState.jokeDataList.map((e) => JokeView(e)).toList(),
+      children: children,
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppData>();
 
     return PageView(
-
       controller: appState.pageController,
       onPageChanged: (index) {
         appState.navBarIndex = index;
@@ -84,7 +103,7 @@ class _AppEntryState extends State<AppEntry> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppData>();
-    print("Ta da! I'm rebuilt! ${appState.navBarIndex}");
+
     return Scaffold(
       body: Column(
         children: [
@@ -95,7 +114,7 @@ class _AppEntryState extends State<AppEntry> {
             onDestinationSelected: (index) {
               appState.navBarIndex = index;
               appState.pageController.jumpToPage(index);
-              },
+            },
           ),
         ],
       ),

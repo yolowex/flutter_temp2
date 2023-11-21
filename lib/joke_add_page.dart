@@ -9,9 +9,13 @@ class JokeAddPage extends StatefulWidget {
 }
 
 class _JokeAddPageState extends State<JokeAddPage> {
-  TextEditingController controller = TextEditingController();
-  bool? checkbox1 = false;
-  bool? checkbox2 = false;
+  TextEditingController textController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  bool? isNSFW = false;
+  bool? isPrivate = false;
+
+  String? dropDown1Value;
+  String? dropDown2Value;
 
   @override
   Widget build(BuildContext context) {
@@ -20,30 +24,30 @@ class _JokeAddPageState extends State<JokeAddPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Flexible(
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: TextField(
-                controller: null,
-                maxLength: 30,
-                decoration: InputDecoration(
-                  hintText: "Joke title",
-                ),
-              ),
-            )),
         Flexible(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: controller,
-                maxLines: 6,
-                minLines: 1,
-                maxLength: 250,
-                decoration: const InputDecoration(
-                  hintText: "Joke content",
-                ),
-              ),
-            )),
+          padding: const EdgeInsets.all(10.0),
+          child: TextField(
+            controller: titleController,
+            maxLength: 30,
+            decoration: const InputDecoration(
+              hintText: "Joke title",
+            ),
+          ),
+        )),
+        Flexible(
+            child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: TextField(
+            controller: textController,
+            maxLines: 6,
+            minLines: 1,
+            maxLength: 250,
+            decoration: const InputDecoration(
+              hintText: "Joke content",
+            ),
+          ),
+        )),
         Flexible(
           child: Padding(
             padding: const EdgeInsets.all(15.0),
@@ -54,9 +58,12 @@ class _JokeAddPageState extends State<JokeAddPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       DropdownMenuGenerator(
-                        width: constraints.maxWidth * 0.48,
+                        onSelected: (newValue) {
+                          dropDown1Value = newValue;
+                        },
                         hintText: "Category",
-                        list: [
+                        width: constraints.maxWidth * 0.48,
+                        list: const [
                           "Meme",
                           "Programmer joke",
                           "Dad joke",
@@ -68,9 +75,12 @@ class _JokeAddPageState extends State<JokeAddPage> {
                         width: constraints.maxWidth * 0.04,
                       ),
                       DropdownMenuGenerator(
-                        width: constraints.maxWidth * 0.48,
+                        onSelected: (newValue) {
+                          dropDown2Value = newValue;
+                        },
                         hintText: "Category",
-                        list: [
+                        width: constraints.maxWidth * 0.48,
+                        list: const [
                           "Meme",
                           "Programmer joke",
                           "Dad joke",
@@ -81,23 +91,25 @@ class _JokeAddPageState extends State<JokeAddPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 15,),
+                SizedBox(
+                  height: 15,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("this content is NSFW"),
+                    const Text("this content is NSFW"),
                     Checkbox(
-                        value: checkbox1,
+                        value: isNSFW,
                         onChanged: (newValue) =>
-                            setState(() => checkbox1 = newValue)),
-                    SizedBox(
-                      width: 15,
+                            setState(() => isNSFW = newValue)),
+                    const SizedBox(
+                      width: 5,
                     ),
-                    Text("post is only visible\n for your followers"),
+                    const Text("post is only visible\n for your followers"),
                     Checkbox(
-                        value: checkbox2,
+                        value: isPrivate,
                         onChanged: (newValue) =>
-                            setState(() => checkbox2 = newValue)),
+                            setState(() => isPrivate = newValue)),
                   ],
                 )
               ],
@@ -110,14 +122,24 @@ class _JokeAddPageState extends State<JokeAddPage> {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    setState(controller.clear);
+                    setState(textController.clear);
                   },
                   child: Icon(Icons.cancel)),
               ElevatedButton(
                   onPressed: () {
+                    JokeData jokeData = JokeData(
+                        title: titleController.text,
+                        accountName: "user",
+                        text: textController.text,
+                        isNSFW: isNSFW == null ? false : isNSFW!,
+                        isPrivate: isPrivate == null ? false : isPrivate!,
+                        category1: dropDown1Value,
+                        category2: dropDown2Value);
+
                     appState.addJoke(
-                        JokeData(accountName: "user", text: controller.text));
-                    controller.clear();
+                      jokeData,
+                    );
+                    textController.clear();
                   },
                   child: Icon(Icons.done)),
             ],
@@ -132,16 +154,23 @@ class DropdownMenuGenerator extends StatefulWidget {
   final List<String> list;
   final String? hintText;
   final double? width;
-  const DropdownMenuGenerator(
-      {super.key, required this.list, this.hintText, this.width});
+  late String dropdownValue = list.first;
+  final void Function(String?) onSelected;
+
+  DropdownMenuGenerator(
+      {super.key,
+      required this.list,
+      this.hintText,
+      this.width,
+      required this.onSelected}) {
+    onSelected(dropdownValue);
+  }
 
   @override
   State<DropdownMenuGenerator> createState() => _DropdownMenuGeneratorState();
 }
 
 class _DropdownMenuGeneratorState extends State<DropdownMenuGenerator> {
-  late String dropdownValue = widget.list.first;
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -151,7 +180,8 @@ class _DropdownMenuGeneratorState extends State<DropdownMenuGenerator> {
         label: widget.hintText == null ? null : Text(widget.hintText!),
         onSelected: (String? value) {
           setState(() {
-            dropdownValue = value!;
+            widget.dropdownValue = value!;
+            widget.onSelected(widget.dropdownValue);
           });
         },
         dropdownMenuEntries: widget.list.map((String value) {

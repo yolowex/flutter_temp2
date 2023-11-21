@@ -4,9 +4,24 @@ enum LikeState { liked, disliked, none }
 
 class JokeData {
   final String accountName;
+  final String title;
   final String text;
+  final bool isNSFW;
+  final bool isPrivate;
+  final String? category1;
+  final String? category2;
+
   LikeState likeState = LikeState.none;
-  JokeData({required this.accountName, required this.text});
+  JokeData({
+    required this.accountName,
+    required this.text,
+    required this.title,
+    this.isNSFW = false,
+    this.isPrivate = false,
+    required this.category1,
+    required this.category2
+  });
+
 }
 
 class JokeView extends StatefulWidget {

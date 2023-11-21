@@ -3,7 +3,7 @@ import 'package:layout_concepts/joke_app.dart';
 import 'package:provider/provider.dart';
 
 class JokeNavBar extends StatefulWidget {
-  final Function onDestinationSelected;
+  void Function(int) onDestinationSelected;
   JokeNavBar({required this.onDestinationSelected});
 
   @override
@@ -19,10 +19,7 @@ class _JokeNavBarState extends State<JokeNavBar> {
 
     return NavigationBar(
         selectedIndex: appState.navBarIndex,
-        onDestinationSelected: (newIndex) {
-          setState(() => appState..navBarIndex = newIndex);
-          widget.onDestinationSelected(newIndex);
-        },
+        onDestinationSelected: widget.onDestinationSelected,
         destinations: const <Widget>[
           NavigationDestination(
               icon: Icon(Icons.people, size: 35), label: "all posts"),

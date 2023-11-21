@@ -76,7 +76,7 @@ class _JokeAddPageState extends State<JokeAddPage> {
                         },
                         hintText: "Category",
                         width: constraints.maxWidth * 0.48,
-                        list: const [
+                        list: [
                           "Meme",
                           "Programmer joke",
                           "College Joke",
@@ -91,7 +91,7 @@ class _JokeAddPageState extends State<JokeAddPage> {
                         },
                         hintText: "Genre",
                         width: constraints.maxWidth * 0.48,
-                        list: const [
+                        list: [
                           "Fun",
                           "Dark Humor",
                           "Dad Joke",
@@ -132,8 +132,8 @@ class _JokeAddPageState extends State<JokeAddPage> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      textController.clear();
                       titleController.clear();
+                      textController.clear();
                     });
                   },
                   child: Icon(Icons.cancel)),
@@ -152,6 +152,7 @@ class _JokeAddPageState extends State<JokeAddPage> {
                           appState.addJoke(
                             jokeData,
                           );
+                          titleController.clear();
                           textController.clear();
                         }
                       : null,
@@ -194,6 +195,7 @@ class _DropdownMenuGeneratorState extends State<DropdownMenuGenerator> {
         label: widget.hintText == null ? null : Text(widget.hintText!),
         onSelected: (String? value) {
           setState(() {
+            print('selected');
             widget.dropdownValue = value!;
             widget.onSelected(widget.dropdownValue);
           });

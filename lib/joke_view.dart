@@ -70,6 +70,7 @@ class _JokeViewState extends State<JokeView> {
     var style1 = TextStyle(fontSize: 25);
 
     return Container(
+
       decoration: BoxDecoration(
           color: Colors.blue.shade500,
           borderRadius: BorderRadius.circular(25),

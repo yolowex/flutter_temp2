@@ -17,6 +17,10 @@ class _JokeAddPageState extends State<JokeAddPage> {
   String? dropDown1Value;
   String? dropDown2Value;
 
+  bool canSubmit() {
+    return textController.text.isNotEmpty && textController.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppData>();
@@ -24,27 +28,36 @@ class _JokeAddPageState extends State<JokeAddPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(
-            child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: TextField(
-            controller: titleController,
-            maxLength: 30,
-            decoration: const InputDecoration(
-              hintText: "Joke title",
+        LayoutBuilder(
+          builder: (context, constraints) => Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              width: constraints.maxWidth * 0.5,
+              child: TextField(
+                onTapOutside: (p) {
+                  setState(() {});
+                },
+                controller: titleController,
+                maxLength: 30,
+                decoration: const InputDecoration(
+                  hintText: "Joke title",
+                  border: UnderlineInputBorder(),
+                ),
+              ),
             ),
           ),
-        )),
+        ),
         Flexible(
             child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: TextField(
             controller: textController,
-            maxLines: 6,
-            minLines: 1,
+            maxLines: 8,
+            minLines: 4,
             maxLength: 250,
             decoration: const InputDecoration(
               hintText: "Joke content",
+              border: OutlineInputBorder(),
             ),
           ),
         )),
@@ -66,9 +79,7 @@ class _JokeAddPageState extends State<JokeAddPage> {
                         list: const [
                           "Meme",
                           "Programmer joke",
-                          "Dad joke",
                           "College Joke",
-                          "Dark Humor"
                         ],
                       ),
                       SizedBox(
@@ -78,14 +89,12 @@ class _JokeAddPageState extends State<JokeAddPage> {
                         onSelected: (newValue) {
                           dropDown2Value = newValue;
                         },
-                        hintText: "Category",
+                        hintText: "Genre",
                         width: constraints.maxWidth * 0.48,
                         list: const [
-                          "Meme",
-                          "Programmer joke",
-                          "Dad joke",
-                          "College Joke",
-                          "Dark Humor"
+                          "Fun",
+                          "Dark Humor",
+                          "Dad Joke",
                         ],
                       ),
                     ],
@@ -126,21 +135,23 @@ class _JokeAddPageState extends State<JokeAddPage> {
                   },
                   child: Icon(Icons.cancel)),
               ElevatedButton(
-                  onPressed: () {
-                    JokeData jokeData = JokeData(
-                        title: titleController.text,
-                        accountName: "user",
-                        text: textController.text,
-                        isNSFW: isNSFW == null ? false : isNSFW!,
-                        isPrivate: isPrivate == null ? false : isPrivate!,
-                        category1: dropDown1Value,
-                        category2: dropDown2Value);
+                  onPressed: canSubmit()
+                      ? () {
+                          JokeData jokeData = JokeData(
+                              title: titleController.text,
+                              accountName: "user",
+                              text: textController.text,
+                              isNSFW: isNSFW == null ? false : isNSFW!,
+                              isPrivate: isPrivate == null ? false : isPrivate!,
+                              category1: dropDown1Value,
+                              category2: dropDown2Value);
 
-                    appState.addJoke(
-                      jokeData,
-                    );
-                    textController.clear();
-                  },
+                          appState.addJoke(
+                            jokeData,
+                          );
+                          textController.clear();
+                        }
+                      : null,
                   child: Icon(Icons.done)),
             ],
           ),

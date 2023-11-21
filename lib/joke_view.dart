@@ -12,16 +12,14 @@ class JokeData {
   final String? category2;
 
   LikeState likeState = LikeState.none;
-  JokeData({
-    required this.accountName,
-    required this.text,
-    required this.title,
-    this.isNSFW = false,
-    this.isPrivate = false,
-    required this.category1,
-    required this.category2
-  });
-
+  JokeData(
+      {required this.accountName,
+      required this.text,
+      required this.title,
+      this.isNSFW = false,
+      this.isPrivate = false,
+      required this.category1,
+      required this.category2});
 }
 
 class JokeView extends StatefulWidget {
@@ -59,6 +57,33 @@ class _JokeViewState extends State<JokeView> {
     });
   }
 
+  Widget buildTagCard(String text){
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Text(text),
+      )
+    );
+  }
+
+  List<Widget> getTagCards(){
+    List<Widget> list = [];
+
+    if (widget.jokeData.isNSFW){
+      list.add(buildTagCard("nsfw"));
+    }
+
+    if (widget.jokeData.isPrivate){
+      list.add(buildTagCard("private"));
+    }
+
+    list.add(buildTagCard(widget.jokeData.category1!));
+    list.add(buildTagCard(widget.jokeData.category2!));
+
+    return list;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     var limit = 30;
@@ -68,14 +93,15 @@ class _JokeViewState extends State<JokeView> {
 
     var style0 = TextStyle(fontSize: 50);
     var style1 = TextStyle(fontSize: 25);
+    var style2 = TextStyle(fontSize: 35, fontWeight: FontWeight.bold);
 
     return Container(
-
       decoration: BoxDecoration(
           color: Colors.blue.shade500,
           borderRadius: BorderRadius.circular(25),
           border: Border.all(color: Colors.red.shade900, width: 5)),
       child: Column(
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -87,26 +113,33 @@ class _JokeViewState extends State<JokeView> {
               )
             ],
           ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Text(widget.jokeData.text,
-                      maxLines: isExpanded ? null : 3,
-                      overflow: TextOverflow.fade,
-                      style: style1),
-                ),
-              )
-            ],
+          Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Text(widget.jokeData.title,
+                maxLines: isExpanded ? null : 3,
+                overflow: TextOverflow.fade,
+                style: style2),
           ),
           SizedBox(
             height: 15,
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Text(widget.jokeData.text,
+                maxLines: isExpanded ? null : 3,
+                overflow: TextOverflow.fade,
+                style: style1),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Wrap(
+            alignment: WrapAlignment.end,
+            direction: Axis.horizontal,
+              children: getTagCards(),
+          ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

@@ -131,7 +131,10 @@ class _JokeAddPageState extends State<JokeAddPage> {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    setState(textController.clear);
+                    setState(() {
+                      textController.clear();
+                      titleController.clear();
+                    });
                   },
                   child: Icon(Icons.cancel)),
               ElevatedButton(

@@ -11,18 +11,44 @@ class JokeAddPage extends StatefulWidget {
 class _JokeAddPageState extends State<JokeAddPage> {
   TextEditingController textController = TextEditingController();
   TextEditingController titleController = TextEditingController();
+  FocusNode textFocusNode = FocusNode();
+  FocusNode titleFocusNode = FocusNode();
+
   bool? isNSFW = false;
   bool? isPrivate = false;
 
   String? dropDown1Value;
   String? dropDown2Value;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    textFocusNode.addListener(() {
+      setState((){});
+    });
+
+    titleFocusNode.addListener(() {
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    textFocusNode.dispose();
+    titleFocusNode.dispose();
+    super.dispose();
+  }
   bool canSubmit() {
-    return textController.text.isNotEmpty && textController.text.isNotEmpty;
+    return titleController.text.isNotEmpty && textController.text.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
+
     var appState = context.watch<AppData>();
 
     return Column(
@@ -34,9 +60,8 @@ class _JokeAddPageState extends State<JokeAddPage> {
             child: SizedBox(
               width: constraints.maxWidth * 0.5,
               child: TextField(
-                onTapOutside: (p) {
-                  setState(() {});
-                },
+
+                focusNode: titleFocusNode,
                 controller: titleController,
                 maxLength: 30,
                 decoration: const InputDecoration(
@@ -51,9 +76,10 @@ class _JokeAddPageState extends State<JokeAddPage> {
             child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: TextField(
+            focusNode: textFocusNode,
             controller: textController,
-            maxLines: 8,
-            minLines: 4,
+            maxLines: 6,
+            minLines: 1,
             maxLength: 250,
             decoration: const InputDecoration(
               hintText: "Joke content",
